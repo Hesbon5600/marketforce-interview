@@ -1,14 +1,17 @@
 from abc import ABCMeta, abstractmethod
-from collections import namedtuple
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, NamedTuple
 import csv
 import sqlite3
 
 from sql_queries import CREATE_TABLE_CAR, CREATE_TABLE_USER, INSERT_CAR, INSERT_USER
 
 
-Car = namedtuple("Car", ["id", "color", "type", "model"])
+class Car(NamedTuple):
+    id: int
+    color: str
+    type: str
+    model: str
 
 
 @dataclass
@@ -21,7 +24,6 @@ class User:
         return asdict(self)
 
 
-@dataclass
 class Controller(metaclass=ABCMeta):
     OBJ_MAPPER = {"user": User, "car": Car}
 
