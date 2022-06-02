@@ -9,15 +9,11 @@ class BaseTest(unittest.TestCase):
     """
 
     def setUp(self):
-        self.users = [
-            User(1, 'John', 20),
-            User(2, 'Mary', 30),
-            User(3, 'Mike', 40)
-        ]
+        self.users = [User(1, "John", 20), User(2, "Mary", 30), User(3, "Mike", 40)]
         self.cars = [
-            Car(1, 'red', 'toyota', 'corolla'),
-            Car(2, 'blue', 'toyota', 'camry'),
-            Car(3, 'green', 'ford', 'mustang')
+            Car(1, "red", "toyota", "corolla"),
+            Car(2, "blue", "toyota", "camry"),
+            Car(3, "green", "ford", "mustang"),
         ]
 
 
@@ -50,8 +46,8 @@ class TestCSVController(BaseTest):
 
         self.csv_controller.create(user)
         self.csv_controller.create(car)
-        saved_user = self.csv_controller.get(user.id, 'user')
-        saved_car = self.csv_controller.get(car.id, 'car')
+        saved_user = self.csv_controller.get(user.id, "user")
+        saved_car = self.csv_controller.get(car.id, "car")
 
         self.assertEqual(user.id, int(saved_user.id))
         self.assertEqual(user.name, saved_user.name)
@@ -62,9 +58,13 @@ class TestCSVController(BaseTest):
         """
         Test add to csv fails
         """
-        invalid_user_type = {'id': 1, 'name': 'John', 'age': 20}
-        invalid_car_type = {'id': 1, 'color': 'red',
-                            'type': 'toyota', 'model': 'corolla'}
+        invalid_user_type = {"id": 1, "name": "John", "age": 20}
+        invalid_car_type = {
+            "id": 1,
+            "color": "red",
+            "type": "toyota",
+            "model": "corolla",
+        }
         with self.assertRaises(TypeError):
             self.csv_controller.create(invalid_user_type)
         with self.assertRaises(TypeError):
@@ -75,9 +75,9 @@ class TestCSVController(BaseTest):
         Test get from csv fails
         """
         with self.assertRaises(ValueError):
-            self.csv_controller.get(100, 'user')
+            self.csv_controller.get(100, "user")
         with self.assertRaises(ValueError):
-            self.csv_controller.get(100, 'car')
+            self.csv_controller.get(100, "car")
 
 
 class TestSQliteController(BaseTest):
@@ -109,8 +109,8 @@ class TestSQliteController(BaseTest):
 
         self.sqlite_controller.create(user)
         self.sqlite_controller.create(car)
-        saved_user = self.sqlite_controller.get(user.id, 'user')
-        saved_car = self.sqlite_controller.get(car.id, 'car')
+        saved_user = self.sqlite_controller.get(user.id, "user")
+        saved_car = self.sqlite_controller.get(car.id, "car")
 
         self.assertEqual(user.id, int(saved_user.id))
         self.assertEqual(user.name, saved_user.name)
@@ -121,9 +121,13 @@ class TestSQliteController(BaseTest):
         """
         Test add to sqlite fails
         """
-        invalid_user_type = {'id': 1, 'name': 'John', 'age': 20}
-        invalid_car_type = {'id': 1, 'color': 'red',
-                            'type': 'toyota', 'model': 'corolla'}
+        invalid_user_type = {"id": 1, "name": "John", "age": 20}
+        invalid_car_type = {
+            "id": 1,
+            "color": "red",
+            "type": "toyota",
+            "model": "corolla",
+        }
         with self.assertRaises(TypeError):
             self.sqlite_controller.create(invalid_user_type)
         with self.assertRaises(TypeError):
@@ -134,6 +138,6 @@ class TestSQliteController(BaseTest):
         Test get from sqlite fails
         """
         with self.assertRaises(ValueError):
-            self.sqlite_controller.get(100, 'user')
+            self.sqlite_controller.get(100, "user")
         with self.assertRaises(ValueError):
-            self.sqlite_controller.get(100, 'car')
+            self.sqlite_controller.get(100, "car")

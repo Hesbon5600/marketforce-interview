@@ -5,11 +5,10 @@ from typing import Any, Dict, List, Optional, Union
 import csv
 import sqlite3
 
-from sql_queries import (CREATE_TABLE_CAR, CREATE_TABLE_USER,
-                         INSERT_CAR, INSERT_USER)
+from sql_queries import CREATE_TABLE_CAR, CREATE_TABLE_USER, INSERT_CAR, INSERT_USER
 
 
-Car = namedtuple('Car', ['id', 'color', 'type', 'model'])
+Car = namedtuple("Car", ["id", "color", "type", "model"])
 
 
 @dataclass
@@ -24,10 +23,7 @@ class User:
 
 @dataclass
 class Controller(metaclass=ABCMeta):
-    OBJ_MAPPER = {
-        'user': User,
-        'car': Car
-    }
+    OBJ_MAPPER = {"user": User, "car": Car}
 
     @abstractmethod
     def create(self, data: Union[User, Car]) -> None:
@@ -56,7 +52,8 @@ class Controller(metaclass=ABCMeta):
         """
         if not isinstance(data, User) and not isinstance(data, Car):
             raise TypeError(
-                f"Invalid data type. Expected 'User' or 'Car' but got '{data.__class__.__name__}'")
+                f"Invalid data type. Expected 'User' or 'Car' but got '{data.__class__.__name__}'"
+            )
 
     def validate_obj_type(self, obj_type: str) -> None:
         """
@@ -68,15 +65,13 @@ class Controller(metaclass=ABCMeta):
         """
         if obj_type not in self.OBJ_MAPPER.keys():
             raise ValueError(
-                f"Invalid obj_type. Expected 'user' or 'car' but got '{obj_type}'")
+                f"Invalid obj_type. Expected 'user' or 'car' but got '{obj_type}'"
+            )
 
 
 class CSVController(Controller):
 
-    CSV_MAPPER = {
-        'user': 'users.csv',
-        'car': 'cars.csv'
-    }
+    CSV_MAPPER = {"user": "users.csv", "car": "cars.csv"}
 
     def create(self, data: Union[User, Car]) -> None:
         """
@@ -95,15 +90,14 @@ class CSVController(Controller):
             csv_data.append(dict_data)
         else:
             for item in csv_data:
-                if item and (int(item['id']) == dict_data['id']):
+                if item and (int(item["id"]) == dict_data["id"]):
                     item_found = item
                     break
             if not item_found:
                 csv_data.append(dict_data)
             else:
                 item_found.update(dict_data)
-        self._write_data_to_csv(
-            file_name, csv_data)
+        self._write_data_to_csv(file_name, csv_data)
 
     def get(self, obj_id: int, obj_type: str) -> Union[User, Car]:
         """
@@ -119,10 +113,10 @@ class CSVController(Controller):
         self.validate_obj_type(obj_type)
         file_name = self.CSV_MAPPER.get(obj_type.lower(), "")
         data = self._get_csv_data(file_name)
-        obj = User if obj_type.lower() == 'user' else Car
+        obj = User if obj_type.lower() == "user" else Car
         for item in data:
             try:
-                if item and (int(item['id']) == obj_id):
+                if item and (int(item["id"]) == obj_id):
                     return obj(**item)
             except ValueError:
                 pass
@@ -138,7 +132,7 @@ class CSVController(Controller):
             The data retrieved.
         """
         try:
-            with open(file_name, 'r') as csv_file:
+            with open(file_name, "r") as csv_file:
                 csv_reader = csv.DictReader(csv_file)
                 return list(csv_reader)
         except FileNotFoundError:
@@ -153,14 +147,13 @@ class CSVController(Controller):
         Returns:
             None
         """
-        with open(file_name, 'w') as csv_file:
+        with open(file_name, "w") as csv_file:
             csv_writer = csv.DictWriter(csv_file, fieldnames=data[0].keys())
             csv_writer.writeheader()
             csv_writer.writerows(data)
 
 
 class SQliteController(Controller):
-
     def create(self, data: Union[User, Car]) -> None:
         """
         Create a new object in the database.
@@ -185,7 +178,7 @@ class SQliteController(Controller):
         self.validate_obj_type(obj_type)
         table_name = obj_type.lower()
         data = self._get_object_by_id(table_name, obj_id)
-        if table_name == 'user':
+        if table_name == "user":
             return User(**data)
         return Car(**data)
 
@@ -217,10 +210,7 @@ class SQliteController(Controller):
         Returns:
             None
         """
-        QUERY_MAPPER = {
-            'user': CREATE_TABLE_USER,
-            'car': CREATE_TABLE_CAR
-        }
+        QUERY_MAPPER = {"user": CREATE_TABLE_USER, "car": CREATE_TABLE_CAR}
 
         query = QUERY_MAPPER.get(table_name, "")
         self._execute_create_sql_query(query)
@@ -234,12 +224,17 @@ class SQliteController(Controller):
         Returns:
             None
         """
-        if table_name == 'user':
+        if table_name == "user":
             query = INSERT_USER.format(
-                id=data['id'], name=data['name'], age=data['age'])
+                id=data["id"], name=data["name"], age=data["age"]
+            )
         else:
             query = INSERT_CAR.format(
-                id=data['id'], color=data['color'], type=data['type'], model=data['model'])
+                id=data["id"],
+                color=data["color"],
+                type=data["type"],
+                model=data["model"],
+            )
         self._create_table_if_not_exists(table_name)
         self._execute_create_sql_query(query)
 
@@ -268,11 +263,11 @@ class SQliteController(Controller):
         raise ValueError(f"{table_name.title()} with id '{obj_id}' not found")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    car = Car(id=4, color='blue', type='toyota', model='corolla')
-    user = User(id=2, name='Bob', age=40)
-    user_2 = User(id=2, name='Alice', age=30)
+    car = Car(id=4, color="blue", type="toyota", model="corolla")
+    user = User(id=2, name="Bob", age=40)
+    user_2 = User(id=2, name="Alice", age=30)
 
     sqlite_controller = SQliteController()
 
@@ -281,8 +276,8 @@ if __name__ == '__main__':
     sqlite_controller.create(car)
 
     print("SQLite Controller\n\n")
-    print("User -->", sqlite_controller.get(2, 'user'))
-    print("Car -->", sqlite_controller.get(4, 'car'), "\n")
+    print("User -->", sqlite_controller.get(2, "user"))
+    print("Car -->", sqlite_controller.get(4, "car"), "\n")
     print("\n")
 
     csv_controller = CSVController()
@@ -292,5 +287,5 @@ if __name__ == '__main__':
     csv_controller.create(car)
 
     print("CSV Controller\n\n")
-    print("User -->", csv_controller.get(2, 'user'))
-    print("Car -->", csv_controller.get(4, 'car'), "\n")
+    print("User -->", csv_controller.get(2, "user"))
+    print("Car -->", csv_controller.get(4, "car"), "\n")
