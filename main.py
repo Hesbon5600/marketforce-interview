@@ -125,7 +125,7 @@ class CSVController(Controller):
         raise ValueError(f"{file_name.title()} with id '{obj_id}' not found")
 
     @staticmethod
-    def _get_csv_data(file_name: str) -> List[Optional[Dict[Any, Any]]]:
+    def _get_csv_data(file_name: str) -> List[Optional[Dict[str, Any]]]:
         """
         Get all the data from the CSV file.
         Args:
@@ -140,7 +140,7 @@ class CSVController(Controller):
         except FileNotFoundError:
             return []
 
-    def _write_data_to_csv(self, file_name: str, data: List[Dict[Any, Any]]) -> None:
+    def _write_data_to_csv(self, file_name: str, data: List[Dict[str, Any]]) -> None:
         """
         Write the data to the CSV file.
         Args:
@@ -217,7 +217,7 @@ class SQliteController(Controller):
         query = QUERY_MAPPER.get(table_name, "")
         self._execute_create_sql_query(query)
 
-    def _insert_data_to_table(self, table_name: str, data: Dict[Any, Any]) -> None:
+    def _insert_data_to_table(self, table_name: str, data: Dict[str, Any]) -> None:
         """
         Insert the data to the table.
         Args:
@@ -240,7 +240,7 @@ class SQliteController(Controller):
         self._create_table_if_not_exists(table_name)
         self._execute_create_sql_query(query)
 
-    def _get_object_by_id(self, table_name: str, obj_id: int) -> Dict[Any, Any]:
+    def _get_object_by_id(self, table_name: str, obj_id: int) -> Dict[str, Any]:
         """
         Get the object by id.
         Args:
